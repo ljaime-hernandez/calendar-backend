@@ -19,8 +19,7 @@ app.use(express.json());
 
 //routes
 app.use('/api/auth', require('./routes/auth'));
-// auth // create, login, renew
-// crud 
+app.use('/api/events', require('./routes/events'));
 
 // listens petitions
 app.listen( process.env.PORT, () => {
