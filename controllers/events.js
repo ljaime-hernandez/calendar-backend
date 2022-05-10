@@ -51,7 +51,7 @@ const createEvent = async(req, res = response) => {
             })
         };
 
-        event = new Event(newEvent);
+        event = new Event(req.body);
         await event.save();
 
         // Generate JWT
