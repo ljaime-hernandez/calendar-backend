@@ -1,12 +1,11 @@
 const { response } = require("express")
 const Event = require('../models/Event-model');
-const url = require('url');
 const { generateJWT } = require('../helpers/jwt');
 
 
 const getEvents = async(req, res = response) => {
 
-    let events = await Event.find();
+    let events = await Event.find().populate('user', 'name');
 
     try {
 
@@ -16,13 +15,10 @@ const getEvents = async(req, res = response) => {
                 msg: 'No events found'
             });
         };
-
-        const token = await generateJWT(req.name, req.email);
         
         res.status(201).json({
                 ok: true,
-                msg: 'get events',
-                token
+                events
         });
     
     } catch (error) {
@@ -36,31 +32,16 @@ const getEvents = async(req, res = response) => {
 
 const createEvent = async(req, res = response) => {
 
-    const [user, newEvent] = req.body;
+    const newEvent = new Event(req.body);
+
     try {
 
-        let event = await Event.findOne({ 
-            initDate: newEvent.initDate,
-            endDate: newEvent.endDate
-        });
+        newEvent.user = req.uid;
+        const savedEvent = await newEvent.save();
 
-        if(event) {
-            return res.status(400).json({
-                ok: false,
-                msg: 'Event with this info exists'
-            })
-        };
-
-        event = new Event(req.body);
-        await event.save();
-
-        // Generate JWT
-        const token = await generateJWT(req.name, req.email);
-    
         res.status(201).json({
             ok: true,
-            msg: 'create event',
-            token
+            event: savedEvent
         });
         
     } catch (error) {
@@ -74,36 +55,37 @@ const createEvent = async(req, res = response) => {
 
 const updateEvent = async(req, res = response) => {
     
-    const [user, upEvent] = req.body;
-    const url_parts = url.parse(req.url, true);
-    let query = url_parts.pathname.substring(1);
-    
+    const eventID = req.params.id;
+    const uid = req.uid;
+
     try {
 
-        let event = await Event.findOne({ _id: query });
+        const event = await Event.findById(eventID);
 
         if(!event) {
-            return res.status(400).json({
+            return res.status(404).json({
                 ok: false,
                 msg: 'Event does not exist'
             })
         };
 
-        query = { _id: url_parts.pathname.substring(1)};
+        if(event.user.toString() !== uid){
+            return res.status(401).json({
+                ok: false,
+                msg: 'User not authorized to change this event'
+            })
+        }
 
-        await Event.updateOne( query, { $set:{
-            title: upEvent.title,
-            notes: upEvent.notes,
-            initDate: upEvent.initDate,
-            endDate: upEvent.endDate
-        }});
+        const upEvent = {
+            ...req.body,
+            user: uid
+        }
 
-        // Generate JWT
-        const token = await generateJWT(req.name, req.email);
+        const updatedEvent = await Event.findByIdAndUpdate( eventID, upEvent, {new: true});
     
         res.status(201).json({
             ok: true,
-            msg: 'update event'
+            event: updatedEvent
         })
         
     } catch (error) {
@@ -117,31 +99,32 @@ const updateEvent = async(req, res = response) => {
 
 const deleteEvent = async(req, res = response) => {
 
-    const [user, delEvent] = req.body;
-    const url_parts = url.parse(req.url, true);
-    let query = url_parts.pathname.substring(1);
+    const eventID = req.params.id;
+    const uid = req.uid;
     
     try {
 
-        let event = await Event.findOne({ _id: query });
+        const event = await Event.findById(eventID);
 
         if(!event) {
-            return res.status(400).json({
+            return res.status(404).json({
                 ok: false,
                 msg: 'Event does not exist'
             })
         };
 
-        query = { _id: url_parts.pathname.substring(1)};
+        if(event.user.toString() !== uid){
+            return res.status(401).json({
+                ok: false,
+                msg: 'User not authorized to delete this event'
+            })
+        }
 
-        await Event.deleteOne(query);
-
-        // Generate JWT
-        const token = await generateJWT(req.name, req.email);
+        const deletedEvent = await Event.findByIdAndDelete(eventID);
     
         res.status(201).json({
             ok: true,
-            msg: 'delete event'
+            event: deletedEvent
         })
         
     } catch (error) {
