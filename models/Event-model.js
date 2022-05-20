@@ -1,11 +1,11 @@
 const {Schema, model} = require('mongoose');
 
 const EventSchema = Schema({
-    initDate: {
+    start: {
         type: Date,
         required: true
     },
-    endDate: {
+    end: {
         type: Date,
         required: true
     },
@@ -14,8 +14,7 @@ const EventSchema = Schema({
         required: true
     },
     notes: {
-        type: String,
-        required: true,
+        type: String
     },
     user: {
         type: Schema.Types.ObjectId,

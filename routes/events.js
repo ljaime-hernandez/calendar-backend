@@ -23,10 +23,9 @@ router.get(
 router.post(
     '/',
     [
-        check('initDate', 'Initial date field is mandatory').custom(isDate),
-        check('endDate', 'End date field is mandatory').custom(isDate),
+        check('start', 'Initial date field is mandatory').custom(isDate),
+        check('end', 'End date field is mandatory').custom(isDate),
         check('title', 'Title field is mandatory').not().isEmpty(),
-        check('notes', 'Notes field is mandatory').not().isEmpty(),
         validateFields
     ],
     createEvent
@@ -34,10 +33,9 @@ router.post(
 
 router.put('/:id', 
     [
-        check('initDate', 'Initial date field is mandatory').custom(isDate),
-        check('endDate', 'End date field is mandatory').custom(isDate),
+        check('start', 'Initial date field is mandatory').custom(isDate),
+        check('end', 'End date field is mandatory').custom(isDate),
         check('title', 'Title field is mandatory').not().isEmpty(),
-        check('notes', 'Notes field is mandatory').not().isEmpty(),
         validateFields
     ],
     updateEvent
