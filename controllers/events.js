@@ -1,10 +1,9 @@
 const { response } = require("express")
 const Event = require('../models/Event-model');
-const { generateJWT } = require('../helpers/jwt');
-
 
 const getEvents = async(req, res = response) => {
 
+    // 
     let events = await Event.find().populate('user', 'name');
 
     try {
