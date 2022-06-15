@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": "14.18.0"
+  },
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js"
@@ -19,6 +22,6 @@
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.3",
     "mongoose": "^6.3.2",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.16"
   }
 }
