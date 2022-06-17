@@ -1,7 +1,7 @@
 const express = require('express');
 const { connection } = require('./db/config');
-require('dotenv').config();
 const cors = require('cors');
+require('dotenv').config();
 
 //creates express server
 const app = express();
@@ -9,7 +9,7 @@ const app = express();
 // database connection
 connection();
 
-app.use(cors())
+app.use(cors());
 
 // Public Directory
 app.use(express.static('public'));
